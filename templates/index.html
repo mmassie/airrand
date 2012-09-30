@@ -1,0 +1,180 @@
+{% extends "_base.html" %}
+
+
+{% block title %}airrand{% endblock %}
+{% block description %}airrand is a location smart to-do list. Say what you need and where, and when you check in get your list sent back to you.{% endblock %}
+
+
+{% block content %}
+
+    {% if not user and inviteCouple %}
+    <div id="inviteCouple">Sign in to accept/reject {{inviter.firstName}}'s invite<div class="aup"><div></div></div></div>
+    {% endif %}
+
+    <form name="addform" id="addform" method="post" action="/additem">
+        <input type="text" name="whatinput" id="whatinput" placeholder="ex: coffee" />
+        <!--<input type="text" name="whereinput" id="whereinput" placeholder="ex: grocery" />-->
+        <select name="whereinput" id="whereinputselect" class="">
+            <option value="" class="placeholder" placeholder="ex: grocery store">ex: grocery store</option>
+            <option value="grocery store">grocery store</option>
+            <option value="home">home</option>
+            <option value="work">work</option>
+            <option value="school">school</option>
+            <option value="hotel">hotel</option>
+            <option value="gym">gym</option>
+            <option value="bookstore">bookstore</option>
+            <option value="department store">department store</option>
+        </select>
+        <div class="dropdown_wrapper">
+            <input type="hidden" name="whereinput" id="whereinput" />
+            <a class="dropdown placeholder" href="#">ex: grocery store</a>
+            <ul id="homedropdown" class="dropdown_list dropp_dropdown_list hidden">
+                <li><a href="#" class="selected">grocery store</a></li>
+                <li><a href="#">home</a></li>
+                <li><a href="#">work</a></li>
+                <li><a href="#">school</a></li>
+                <li><a href="#">hotel</a></li>
+                <li><a href="#">gym</a></li>
+                <li><a href="#">bookstore</a></li>
+                <li><a href="#">department store</a></li>
+            </ul>
+        </div>
+        <input type="hidden" name="wheninput" id="wheninput" value="02/12" />
+        {% if user.lastCheckin %}
+        <a href="/list/" id="lastcheckin" class="hideMobile">view last check-in</a>
+        {% endif %}
+        <button>submit</button>
+        <p id="addformerror">&nbsp;</p>
+    </form>
+    <table id="todotable">
+      <thead>
+      <tr>
+          <th class="spacerLeft hideMobile"></th>
+          <th class="redLines hideMobile"></th>
+          <th class="checkbox">to-do</th>
+          <th class="redLines showMobile"></th>
+          <th>what</th>
+          <th id="at-tablehead">@</th>
+          <th>where</th>
+          <th class="hideMobile">date</th>
+          <th class="spacerRight hideMobile"></th>
+      </tr>
+      </thead>
+      <tbody>
+{% for task in tasks %}
+      <tr class="active">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="{{task.key()}}" id="{{task.key()}}" class="checkbox" value="true" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="{{task.key()}}">{{task.what}}</label></td>
+          <td>@</td>
+          <td>{{task.where}}</td>
+          <td class="hideMobile">{{task.created|datetimeformat('%m/%d')}} &#149; <a href="#delete" class="deleteLink" data-key="{{task.key()}}">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+{% endfor %}
+{% for task in partnerTasks %}
+      <tr class="active partner">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="{{task.key()}}" id="{{task.key()}}" class="checkbox" value="true" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="{{task.key()}}">{{task.what}}</label></td>
+          <td>@</td>
+          <td>{{task.where}}</td>
+          <td class="hideMobile">{{task.created|datetimeformat('%m/%d')}} &#149; <a href="#delete" class="deleteLink" data-key="{{task.key()}}">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+{% endfor %}
+{% if user==None %}
+      <tr class="active">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="checkbox1" id="checkbox1" class="checkbox" value="demo" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="checkbox1">Cheez-Its</label></td>
+          <td>@</td>
+          <td>grocery</td>
+          <td class="hideMobile">12/1 &#149; <a href="#delete" class="deleteLink">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      <tr class="active">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="checkbox2" id="checkbox2" class="checkbox" value="demo" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="checkbox2">Delivering Happiness</label></td>
+          <td>@</td>
+          <td>bookstore</td>
+          <td class="hideMobile">12/1 &#149; <a href="#delete" class="deleteLink">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      <tr class="active">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="checkbox3" id="checkbox3" class="checkbox" value="demo" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="checkbox3">Everything is in its right place LP</label></td>
+          <td>@</td>
+          <td>department store</td>
+          <td class="hideMobile">12/1 &#149; <a href="#delete" class="deleteLink">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      <tr class="active">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td><input type="checkbox" name="checkbox3" id="checkbox3" class="checkbox" value="demo" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="checkbox3">Mini DVI to VGA Adapter</label></td>
+          <td>@</td>
+          <td>work</td>
+          <td class="hideMobile">12/1 &#149; <a href="#delete" class="deleteLink">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+{% endif %}
+      <tr class="firstBlank">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"></td>
+          <td class="redLines showMobile"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="hideMobile"></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      <tr class="secondBlank">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"></td>
+          <td class="redLines showMobile"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="hideMobile"></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      </tbody>
+    </table>
+
+
+<script id="newTask" type="text/x-jquery-tmpl">
+<tr class="animate active">
+    <td class="spacerLeft hideMobile"></td>
+    <td class="redLines hideMobile"></td>
+    <td class="checkbox"><input type="checkbox" name="${taskId}" id="${taskId}" class="checkbox" value="true" /></td>
+    <td class="redLines showMobile"></td>
+    <td><label for="${taskId}">${what}</label></td>
+    <td>@</td>
+    <td>${where}</td>
+    <td class="hideMobile">${when} &#149; <a href="#delete" class="deleteLink" data-key="${taskId}">delete</a></a></td>
+    <td class="spacerRight hideMobile"></td>
+</tr>
+</script>
+
+{% endblock %}
+
+{% block additionalPlugins%},'/js/bookmark-bubble.js'{% endblock %}
+
+{% block customGa %}{% if justRegistered %},'/justRegistered'{% elif firstName is defined %},'/home/loggedIn'{% else %},'/home/loggedOut'{% endif %}{% endblock %}

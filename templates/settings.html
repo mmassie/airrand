@@ -1,0 +1,206 @@
+{% extends "_base.html" %}
+
+
+{% block title %}While You're There{% endblock %}
+{% block description %}airrand is a location smart to-do list. Say what you need and where, and when you check in get your list sent back to you.{% endblock %}
+
+
+{% block content %}
+<h1 id="h1accountpage">account page</h1>
+<form name="settingsForm" id="settingsForm" method="post" action="/settings">
+
+
+
+
+
+
+
+<h2>couples:</h2>
+<p class="settings">
+Share your to-do list with your better half (optional). Whoever hits the store next picks up the milk.
+</p>
+
+<div class="inputContainer{% if error.inviteCouple %} error{% endif %}">
+{# confirmed couple #}
+{% if partners|count %}
+{% for partner in partners %}
+<div class="coupleContainer">
+<div class="coupleStatus confirmed" data-partnerkey="{{partner.key().name()}}">{{partner.firstName}} {{partner.lastName}} <span>confirmed</span><a href="#cancel" class="cancelCouple"><img src="/img/xbutton.png" width="25" height="25" alt="cancel" /></a></div>
+</div>
+{% endfor %}
+
+{# received an invite #}
+{% elif inviter %}
+<div class="coupleContainer">
+<blockquote>
+    {{inviteCouple.message}}
+</blockquote>
+<div class="inviteCoupleByLine">- {{inviter.firstName}}</div>
+<button class="coupleAccept" data-inviteCode="{{inviteCouple.key().name()}}">accept</button> <div class="coupleStatus received" data-inviteCode="{{inviteCouple.key().name()}}">{{inviter.firstName}} {{inviter.lastName}} <span>pending</span><a href="#cancel" class="cancelCouple"><img src="/img/xbutton.png" width="25" height="25" alt="cancel" /></a></div>
+</div>
+
+{# sent an invite #}
+{% elif sentInvites|count %}
+{% for invite in sentInvites %}
+<div class="coupleContainer">
+<div class="coupleStatus sent" data-inviteCode="{{invite.key().name()}}">{{invite.email}} <span>pending</span><a href="#cancel" class="cancelCouple"><img src="/img/xbutton.png" width="25" height="25" alt="cancel" /></a></div>
+</div>
+{% endfor %}
+
+{# if none of these they aint got nothing going on #}
+{% else %}
+<div class="inviteCouple clearfix inputContainer{% if error.inviteCouple %} error{% endif %}">
+    <div class="sideBySide">
+        <label for="inviteCoupleEmail">invite a partner by email</label>
+        <input type="text" name="inviteCoupleEmail" id="inviteCoupleEmail" placeholder="email address" value="{{input.inviteCoupleEmail}}" />
+    </div>
+    <div class="sideBySide">
+        <label for="inviteCoupleMsg">personal message (not required)</label>
+        <textarea name="inviteCoupleMsg" id="inviteCoupleMsg">{{input.inviteCoupleMsg}}</textarea>
+    </div>
+</div>
+{% endif %}
+<p class="errorText inviteCoupleError">{% if error.inviteCouple %}{{error.inviteCouple}}{% endif %}</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h2>notifications:</h2>
+<p class="settings">
+airrand.com sends <strong>email</strong> and <strong>sms</strong> alerts when you check-in somewhere with a to-do item.
+</p>
+
+<label for="phone" id="notificationPref">How do you want to receive alerts?</label>
+
+<div class="inputContainer{% if error.phone %} error{% endif %}">
+    <label for="smsPref" class="pref">
+        <input type="checkbox" name="smsPref" id="smsPref" class="checkbox pref" {% if input.smsPref %}checked="checked" {% endif %}value="true" />
+        sms
+    </label>
+    <input type="text" name="phone" id="phone" placeholder="phone number" value="{{input.phone}}" />
+    <p class="errorText">{% if error.phone %}{{error.phone}}{% endif %}</p>
+</div>
+
+
+<div class="inputContainer{% if error.email %} error{% endif %}">
+    <label for="emailPref" class="pref">
+        <input type="checkbox" name="emailPref" id="emailPref" class="checkbox pref" {% if input.emailPref %}checked="checked" {% endif %}value="true" />
+        email
+    </label>
+    <input type="text" name="email" id="email" placeholder="email address" value="{{input.email}}" />
+    <p class="errorText">{% if error.email %}{{error.email}}{% endif %}</p>
+</div>
+
+
+    
+
+
+
+
+{% if not user.status %}
+<h2>terms:</h2>
+<p class="settings">
+We'll be good if you'll be good.
+</p>
+<div class="inputContainer terms{% if error.terms %} error{% endif %}">
+    <label for="terms"><input type="checkbox" name="terms" id="terms" class="checkbox" value="true" {% if input.terms %}checked="checked" {% endif %}/> I Agree to the <a href="/terms-and-privacy" target="_blank">Terms/Privacy Policy</a></label>
+    <p class="errorText">{% if error.terms %}{{error.terms}}{% endif %}</p>
+</div>
+{% endif %}
+
+<div class="submitDiv">
+    <button>save</button>
+</div>
+
+{% if input.success %}<p class="success">{{input.success}}</p>{% endif %}
+</form>
+
+
+
+{% if user.status and tasks|count %}
+
+
+    <table id="todotable">
+      <thead>
+      <tr>
+          <th class="spacerLeft hideMobile"></th>
+          <th class="redLines hideMobile"></th>
+          <th class="checkbox">to-do</th>
+          <th class="redLines showMobile"></th>
+          <th>what</th>
+          <th id="at-tablehead">@</th>
+          <th>where</th>
+          <th class="hideMobile">date</th>
+          <th class="spacerRight hideMobile"></th>
+      </tr>
+      </thead>
+      <tbody>
+
+{% for task in tasks %}
+      <tr class="finished">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="{{task.key()}}" id="{{task.key()}}" class="checkbox" value="true" checked="checked" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="{{task.key()}}">{{task.what}}</label></td>
+          <td>@</td>
+          <td>{{task.where}}</td>
+          <td class="hideMobile">{{task.created|datetimeformat('%m/%d')}} &#149; <a href="#delete" class="deleteLink" data-key="{{task.key()}}">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+{% endfor %}
+      </tbody>
+    </table>
+
+{% endif %}
+
+
+<script id="inviteFields" type="text/x-jquery-tmpl">
+<div class="inviteCouple clearfix inputContainer">
+    <div class="sideBySide">
+        <label for="inviteCoupleEmail">invite a partner by email</label>
+        <input type="text" name="inviteCoupleEmail" id="inviteCoupleEmail" placeholder="email address" value="" />
+    </div>
+    <div class="sideBySide">
+        <label for="inviteCoupleMsg">personal message (not required)</label>
+        <textarea name="inviteCoupleMsg" id="inviteCoupleMsg"></textarea>
+    </div>
+    <p class="errorText"></p>
+</div>
+</script>
+<script id="newCouple" type="text/x-jquery-tmpl">
+<div class="coupleContainer">
+<div class="coupleStatus confirmed" data-partnerkey="${partnerKey}">${firstName} ${lastName} <span>confirmed</span><a href="#cancel" class="cancelCouple"><img src="/img/xbutton.png" width="25" height="25" alt="cancel" /></a></div>
+</div>
+</script>
+
+
+
+{% endblock %}
+
+{% block additionalPlugins%},'/js/plugins/jquery.inputmask.js','/js/plugins/jquery.jqEasyCharCounter.min.js'{% endblock %}
+{% block inPageJs%}
+$(function() {
+    $('#phone').inputmask({
+        "mask":"(999) 999-9999"//,
+        //"placeholder":" "
+    });
+
+    $('#inviteCoupleMsg').jqEasyCounter({
+        'msgAppendMethod': 'insertAfter',
+        'msgFontColor': '#eee',
+        'msgTextAlign': 'right'
+    });
+});
+{% endblock %}
+
+
+{% block customGa %}{% if not user.status %},'/justOauthed'{% endif %}{% endblock %}

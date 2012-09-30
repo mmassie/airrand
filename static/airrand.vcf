@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:;airrand;;;
+FN:airrand
+ORG:airrand;
+EMAIL;type=INTERNET;type=WORK;type=pref:support@airrand.com
+TEL;type=WORK;type=pref:+1-415-702-3798
+X-ABShowAs:COMPANY
+X-ABUID:726BC630-865F-4416-B113-9F5A90875208\:ABPerson
+END:VCARD

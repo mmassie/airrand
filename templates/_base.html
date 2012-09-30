@@ -1,0 +1,163 @@
+{% autoescape true %}<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6 ielt8 ielt7" {#manifest="/cache.manifest"#} > <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7 ielt8" {#manifest="/cache.manifest"#} > <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8" {#manifest="/cache.manifest"#} > <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9" {#manifest="/cache.manifest"#} > <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js" {#manifest="/cache.manifest"#} > <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+  <title>{% block title %}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{% endblock %} " />
+  <meta name="author" content="{% block author %}Bob Ralian{% endblock %}" />
+  <meta http-equiv="cache-control" content="no-cache" />
+  <!--  Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Place favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <meta property="og:title" content="airrand" />
+    <meta property="fb:admins" content="2418120"/>
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://www.airrand.com/?utm_campaign=homeshare" />
+    <meta property="og:image" content="http://www.airrand.com/apple-touch-icon.png" />
+    <meta property="og:description" content="Check out airrand.com: a location-smart to-do list" />
+    <meta property="og:site_name" content="airrand" />
+
+
+
+  <!--
+  Uncomment this link and add any special fonts you'd like to load from google font directory
+  http://code.google.com/webfonts
+  <link href='http://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+  -->
+
+  <!-- CSS : implied media="all" -->
+  <link rel="stylesheet" href="/css/style.css?v=48" />
+
+  <!-- Uncomment if you are specifically targeting less enabled mobile browsers
+  <link rel="stylesheet" media="handheld" href="css/handheld.css?v=2">  -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
+  <script src="/js/modernizr-yepnope.js"></script>
+
+</head><body>
+    <header class="{% if bannerHeader %}banner{% endif %}">
+        <div id="tagline"><a href="/">airrand.com:</a> a location smart to-do list</div>
+        
+        {% if firstName is defined %}
+        <ul id="headerlinks" class="hideMobile">
+            <li>[{{firstName}} {% if lastName is defined and lastName and lastName|length>0 %}{{lastName[:1]}}.{% endif %}]</li>
+            <li><a href="/">home</a></li>
+            <!-- <li><a href="/list/">last check-in</a></li> Does this need to be here or is it redundant? -->
+            <li><a href="/settings">settings</a></li>
+            <li><a href="/logout">logout</a></li>
+        </ul>
+        {% else %}
+        <ul id="headerlinks">
+            <li><a href="{{fslogin}}" id="foursquareloginlink" class="ir">log in with foursquare</a></li>
+        </ul>
+        {% endif %}
+        
+    </header><div id="container">
+
+
+    <div id="main" class="{{page}}">
+      <div id="saving"><span>saving...</span></div>
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+<ul class="footerlinks hideMobile">
+    <li><a href="/about">about</a></li>
+    <li><a href="http://blog.airrand.com">blog</a></li>
+    <li><a href="https://twitter.com/#!/airrand">@airrand</a></li>
+    <li><a href="/terms-and-privacy">privacy</a></li>
+</ul>
+{% if firstName is defined %}
+<ul class="footerlinks showMobile">
+    <li><a href="/settings">{{firstName}} {% if lastName is defined and lastName and lastName|length>0 %}{{lastName[:1]}}.{% endif %}</a></li>
+    <li><a href="/">home</a></li>
+    <li><a href="/list/">last check-in</a></li>
+    <!--<li><a href="/settings">settings</a></li>-->
+    <li><a href="/logout">logout</a></li>
+</ul>
+{% endif %}
+{% if page == "home" and showshare %}
+<div id="sharelinks" class="">
+    <span  class='st_facebook_button' displayText='Facebook'></span>
+    <span  class='st_twitter_button' displayText='Tweet'  st_url="http://www.airrand.com/?utm_campaign=homeshare" st_title="Check out @airrand, a location-smart to-do list. #protip #useful #webapp"></span>
+    <span  class='st_tumblr_button' displayText='Tumblr'></span>
+	<span  class='st_sharethis_button' displayText='ShareThis'></span>
+</div>
+{% endif %}
+    </footer>
+  </div> <!--! end of #container -->
+
+
+  <!-- Javascript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
+  <script type="text/javascript"><!--
+      yepnope([
+          {
+              load:'//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js',
+              callback: function(){
+                  !window.jQuery && yepnope({
+                      load : '/js/jquery-1.4.4.min.js' // Load local copy
+                    });
+              }
+          },
+          {
+              load:['/js/plugins.js','http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js'{% block additionalPlugins%}{% endblock %},'/js/script.js?v=16'],
+              complete: function(){
+                  {% block inPageJs%}{% endblock %}
+              }
+          },
+          {
+              test:Modernizr.input.placeholder,
+              nope:'/js/plugins/jquery.placeholder.min.js',
+              callback: function(){
+                  $('input, textarea').placeholder();
+              }
+          }{% if page=="home" %},
+          {
+              load:"http://w.sharethis.com/button/buttons.js",
+              callback: function(){
+                  var switchTo5x=true;
+                  stLight.options({publisher:'050cc949-68ca-4c68-99fa-1a851f38a429'});
+              }
+          }{% endif %}{#
+
+              *---------------------------------------------
+              * load any admin-specific js files or functionality within the following block
+
+
+          #}{% if isAdmin %},
+          {
+              load:['/js/profiling/yahoo-profiling.min.js','/js/profiling/config.js']
+          }{% endif %}
+      ]);
+
+  
+  //asynchronous google analytics: mathiasbynens.be/notes/async-analytics-snippet
+  //     change the UA-XXXXX-X to be your site's ID
+
+   var _gaq = [['_setAccount', 'UA-21352490-1'], ['_trackPageview'{% block customGa %}{% endblock %}]];
+   (function(d, t) {
+    var g = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    g.async = true;
+    g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g, s);
+   })(document, 'script');
+  
+  --></script>
+
+</body>
+</html>
+{% endautoescape %}

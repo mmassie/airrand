@@ -1,0 +1,85 @@
+application: airrand
+version: 1-0-4-beta
+runtime: python
+api_version: 1
+
+default_expiration: "365d"
+
+derived_file_type:
+- python_precompiled
+
+handlers:
+- url: /(robots\.txt|favicon\.ico|apple-touch-icon\.png)
+  static_files: static/\1
+  upload: static/(.*)
+#- url: /cache.manifest
+#  mime_type: "text/cache-manifest"
+#  static_files: static/cache.manifest
+#  upload: static/cache.manifest
+#  expiration: "0d"
+- url: /static
+  static_dir: static
+
+- url: /js
+  static_dir: static/js
+
+- url: /css
+  static_dir: static/css
+
+- url: /img
+  static_dir: static/img
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /_ah/queue/deferred
+  script: main.py
+  login: admin
+
+- url: /htmlcov
+  static_dir: htmlcov
+  login: admin
+
+- url: /cron.*
+  script: main.py
+  login: admin
+
+- url: /worker
+  script: main.py
+  login: admin
+
+- url: /gae_bingo/static
+  static_dir: gae_bingo/static
+  expiration: "300s"
+
+- url: /gae_bingo/tests/.*
+  script: gae_bingo/tests/main.py
+
+- url: /gae_bingo/.*
+  script: gae_bingo/main.py
+  login: required
+
+- url: /.*
+  script: main.py
+
+builtins:
+- datastore_admin: on
+- remote_api: on
+- appstats: on
+
+inbound_services:
+- warmup
+
+#admin_console:
+#  pages:
+#  - name: Blog Comment Admin
+#    url: /blog/admin/comments
+#  - name: Create a Blog Post
+#    url: /blog/admin/newentry
+
+#error_handlers:
+#  - file: default_error.html
+#
+#  - error_code: over_quota
+#    file: over_quota.html

@@ -1,0 +1,87 @@
+{% extends "_base.html" %}
+
+
+{% block title %}While You're There{% endblock %}
+{% block description %}Here are all of your to-do items for [place]{% endblock %}
+
+
+{% block content %}
+<h1>while you are there</h1>
+<h2>you have {{tasks|count}} item{% if tasks|count>1 %}s{% endif %} on your to-do list</h2>
+    <!--<form name="addform" id="addform" method="post" action="/additem">
+        <input type="text" name="whatinput" id="whatinput" placeholder="ex: coffee" />
+        <input type="text" name="whereinput" id="whereinput" placeholder="ex: grocery" />
+        <input type="hidden" name="wheninput" id="wheninput" value="02/12" />
+        <button>submit</button>
+        <p id="addformerror">&nbsp;</p>
+    </form>-->
+    <table id="todotable">
+      <thead>
+      <tr>
+          <th class="spacerLeft hideMobile"></th>
+          <th class="redLines hideMobile"></th>
+          <th class="checkbox">to-do</th>
+          <th class="redLines showMobile"></th>
+          <th>what</th>
+          <th id="at-tablehead">@</th>
+          <th>where</th>
+          <th class="hideMobile">date</th>
+          <th class="spacerRight hideMobile"></th>
+      </tr>
+      </thead>
+      <tbody>
+{% for task in tasks %}
+      <tr class="active">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="{{task.key()}}" id="{{task.key()}}" class="checkbox" value="true" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="{{task.key()}}">{{task.what}}</label></td>
+          <td>@</td>
+          <td>{{task.where}}</td>
+          <td class="hideMobile">{{task.created|datetimeformat('%m/%d')}} &#149; <a href="#delete" class="deleteLink" data-key="{{task.key()}}">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+{% endfor %}
+{% for task in partnerTasks %}
+      <tr class="active partner">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"><input type="checkbox" name="{{task.key()}}" id="{{task.key()}}" class="checkbox" value="true" /></td>
+          <td class="redLines showMobile"></td>
+          <td><label for="{{task.key()}}">{{task.what}}</label></td>
+          <td>@</td>
+          <td>{{task.where}}</td>
+          <td class="hideMobile">{{task.created|datetimeformat('%m/%d')}} &#149; <a href="#delete" class="deleteLink" data-key="{{task.key()}}">delete</a></a></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+{% endfor %}
+      <tr class="firstBlank">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"></td>
+          <td class="redLines showMobile"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="hideMobile"></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      <tr class="secondBlank">
+          <td class="spacerLeft hideMobile"></td>
+          <td class="redLines hideMobile"></td>
+          <td class="checkbox"></td>
+          <td class="redLines showMobile"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="hideMobile"></td>
+          <td class="spacerRight hideMobile"></td>
+      </tr>
+      </tbody>
+    </table>
+
+{% endblock %}
+
+
+{% block customGa %},'/list'{% endblock %}
