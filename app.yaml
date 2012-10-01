@@ -1,7 +1,8 @@
-application: airrand
-version: 1-0-4-beta
-runtime: python
+application: airrand-hrd
+version: 0-1-1-beta
+runtime: python27
 api_version: 1
+threadsafe: true
 
 default_expiration: "365d"
 
